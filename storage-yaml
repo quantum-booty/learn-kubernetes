@@ -1,0 +1,31 @@
+# What do we want?
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+spec:
+  # the persistent volume claim would search across the cluster to find any
+  # persistent volume that satisfies the spec:
+  # i.e. matching storageClassName, accessModes and sufficient 20Gi storage
+  # this run-time process is called binding
+  storageClassName: mylocalstorage
+  accessModes:
+    - ReadWriteOnce # the volume can only be read/write by a single node
+  resources:
+    requests:
+      storage: 20Gi # use 20gb of the requested storage
+---
+# How do we want it implemented?
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage
+spec:
+  storageClassName: mylocalstorage
+  capacity:
+    storage: 20Gi # request 20gb of storage
+  accessModes:
+    - ReadWriteOnce # the volume can only be read/write by a single node
+  hostPath: # mount to a path on the host machine, for dev/testing only
+    path: /mnt/some/directory/structure/
+    type: DirectoryOrCreate

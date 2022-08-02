@@ -1,0 +1,64 @@
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetmap-webapp
+spec:
+  # this defines which pods are going to be represented by this service
+  # the service becomes a network endpoint for either other services
+  # or maybe external users to connect to (e.g. browser)
+  selector:
+    # filter pods based on label
+    app: webapp
+  # https://medium.com/google-cloud/kubernetes-nodeport-vs-loadbalancer-vs-ingress-when-should-i-use-what-922f010849e0
+  # type: ClusterIP -> service only accessible within the cluster
+  # type: LoadBalancer # -> the recommended way to expose a service on the internet
+  # also: ingress, which is not actually a service
+  type: NodePort
+  # expose port on each nodes to outside the cluster, in this case map port 80 on each pod to nodeport 30080
+  # if nodePort: 30080 is left blank, kubernetes would choose port for you
+  # not recommended to use NodePort in production
+  ports:
+  - name: http
+    port: 80
+    nodePort: 30080 # if using nodePort, has to be larger than 30000
+
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-queue
+spec:
+  selector:
+    app: "fleetman-queue"
+  type: NodePort
+  ports:
+  - name: http
+    port: 8161
+    nodePort: 30010
+  - name: endpoint
+    port: 61616
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-position-tracker
+spec:
+  selector:
+    app: "position-tracker"
+  type: ClusterIP # only expose to other pods in the cluster
+  ports:
+  - name: http
+    port: 8080
+--- 
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-api-gateway
+spec:
+  selector:
+    app: "api-gateway"
+  type: ClusterIP # only expose to other pods in the cluster
+  ports:
+  - name: http
+    port: 8080

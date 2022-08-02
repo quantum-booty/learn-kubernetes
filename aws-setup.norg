@@ -1,0 +1,19 @@
+* delete a cluster
+  - eksctl delete cluster fleetman
+  - also need to delete the volumes if data no longer wanted
+
+* create a cluster
+  ~ Install eksctl
+  ~ Update AWS CLI to Version 2
+    https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
+  ~ Set up a Group
+    add permissions for managing eks cluster
+    https://eksctl.io/usage/minimum-iam-policies/
+  ~ Add a user to the group, then use "aws configure" to input the credentials
+    for region, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html
+  ~ Install kubectl
+    Warning: check the current default kubernetes version supplied with EKS and install a matching version of kubectl
+  ~ Start your cluster!
+    eksctl create cluster --name fleetman --nodes-min=3
+  ~ Deploy kubernetes dashboard
+    https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
